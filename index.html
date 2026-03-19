@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Aventura de la Comunidad</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <main id="pantalla-inicio">
+        <img src="src/imgs/introduccion/Titulo_Escolar_Renovado-Primaria-Libro_02.png" 
+             class="logo-titulo" alt="La Aventura de la Comunidad">
+        
+        <img src="src/imgs/introduccion/L5-Portadilla2_comunidad.png" 
+             class="img-comunidad" alt="Comunidad de Amigos">
+
+        <div class="contenedor-botones">
+            <button id="btn-jugar" class="btn-menu">¡A jugar!</button>
+            <button id="btn-instrucciones" class="btn-menu">¿Cómo jugar?</button>
+        </div>
+    </main>
+
+    <section id="escenario-juego" class="hidden">
+        <div id="marcador">Pistas encontradas: <span id="contador">0</span>/10</div>
+        
+        <div id="contenedor-mision">
+            <img src="src/imgs/zona01/Juego_de_busqueda.jpg" id="fondo-busqueda" alt="Salón de clases">
+            
+            <div id="capa-iconos"></div>
+        </div>
+    </section>
+
+    <div id="modal-mensaje" class="modal hidden">
+        <div class="modal-contenido">
+            <h2 id="modal-titulo">¡Excelente!</h2>
+            <p id="modal-texto"></p>
+            <button id="btn-cerrar-modal">Continuar</button>
+        </div>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>
