@@ -1,175 +1,121 @@
-import { DATOS_AVENTURA } from './preguntas.js';
+import { iniciarZona1 } from './zona1.js';
+import { iniciarZona3 } from './zona3.js';
 
-const zona1 = DATOS_AVENTURA.zona1;
-const RUTA_IMGS = "src/imgs/zona01/"; 
-
-let encontradas = 0;
 let puntajeTotal = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- REFERENCIAS ---
+    // --- REFERENCIAS DE ELEMENTOS ---
     const btnJugar = document.getElementById('btn-jugar');
+    const btnInstrucciones = document.getElementById('btn-instrucciones');
     const pantallaInicio = document.getElementById('pantalla-inicio');
-    const escenarioJuego = document.getElementById('escenario-juego');
-    const capaIconos = document.getElementById('capa-iconos');
-    const contenedorMision = document.getElementById('contenedor-mision');
+    const escenario1 = document.getElementById('escenario-juego');
+    const escenario3 = document.getElementById('escenario-zona3');
+    const btnCerrarModal = document.getElementById('btn-cerrar-modal');
 
-    // Se ha eliminado el detector de coordenadas para el juego final
+    // --- LÓGICA DE ADAPTABILIDAD (RESPONSIVE) ---
+    function ajustarEscala() {
+        const contenedores = [
+            document.getElementById('contenedor-mision'),
+            document.getElementById('contenedor-runner')
+        ];
+        
+        const baseW = 1024;
+        const baseH = 768;
+        
+        // Calculamos la proporción disponible
+        const escala = Math.min(
+            window.innerWidth / baseW,
+            window.innerHeight / baseH
+        );
 
+        // Si la pantalla es más pequeña que el juego, escalamos
+        const valorEscala = escala < 1 ? escala * 0.98 : 1; 
+        
+        document.documentElement.style.setProperty('--escala-juego', valorEscala);
+    }
+
+    // Escuchar cambios de tamaño o rotación de pantalla
+    window.addEventListener('resize', ajustarEscala);
+    window.addEventListener('orientationchange', ajustarEscala);
+    ajustarEscala(); // Ejecutar al inicio
+
+    // --- EVENTOS PRINCIPALES ---
+
+    // Botón Jugar: Inicia la aventura
     if (btnJugar) {
         btnJugar.onclick = () => {
             pantallaInicio.classList.add('hidden');
-            escenarioJuego.classList.remove('hidden');
+            escenario1.classList.remove('hidden');
             crearMarcadorPuntos();
-            crearChecklist(); 
-            iniciarZona1();
+            
+            // Iniciamos Zona 1 pasándole las funciones de callback
+            iniciarZona1(finalizarZona1, sumarPuntos);
         };
     }
 
-    // --- LÓGICA DEL CHECKLIST ---
-    function crearChecklist() {
-        let checkCont = document.getElementById('checklist-tesoros');
-        if (!checkCont) {
-            checkCont = document.createElement('div');
-            checkCont.id = 'checklist-tesoros';
-            escenarioJuego.appendChild(checkCont);
-        }
-        
-        let html = `<h3>Lista de Tesoros</h3>`;
-        zona1.pistas.forEach(p => {
-            html += `<div id="check-${p.id}" class="item-check">⬜ ${p.id.toUpperCase()}</div>`;
-        });
-        checkCont.innerHTML = html;
+    // Botón Instrucciones
+    if (btnInstrucciones) {
+        btnInstrucciones.onclick = () => {
+            mostrarMensajeGlobal(
+                "¿Cómo Jugar?", 
+                "Nivel 1: Encuentra los objetos perdidos en el salón. \nNivel 3: ¡Corre y salta! Usa espacio o toca la pantalla para recoger corazones y esquivar obstáculos."
+            );
+        };
     }
 
-    function marcarChecklist(id) {
-        const item = document.getElementById(`check-${id}`);
-        if (item) {
-            item.innerHTML = `✅ ${id.toUpperCase()}`;
-            item.classList.add('logrado');
-        }
+    // Botón Cerrar Modal Genérico
+    if (btnCerrarModal) {
+        btnCerrarModal.onclick = () => {
+            const modal = document.getElementById('modal-mensaje');
+            modal.classList.add('hidden');
+            // Limpiamos opciones extra si las hubiera
+            document.getElementById('contenedor-opciones').innerHTML = "";
+            btnCerrarModal.classList.remove('hidden');
+        };
     }
 
-    // --- INICIO DE ZONA 1 ---
-    function iniciarZona1() {
-        capaIconos.innerHTML = "";
-        encontradas = 0;
-        document.getElementById('contador').innerText = encontradas;
-        
-        zona1.pistas.forEach(pista => {
-            const div = document.createElement('div');
-            div.className = 'pista-icono';
-            div.style.top = `${pista.top}px`;
-            div.style.left = `${pista.left}px`;
-            
-            div.onclick = (e) => {
-                e.stopPropagation();
-                
-                if (div.classList.contains('revelado')) return;
-                div.classList.add('revelado'); 
-                
-                encontradas++;
-                document.getElementById('contador').innerText = encontradas;
-                
-                marcarChecklist(pista.id);
+    // --- FUNCIONES DE FLUJO DEL JUEGO ---
 
-                setTimeout(() => {
-                    if (pista.dilema) {
-                        lanzarDilema(pista, pista.dilema);
-                    } else {
-                        mostrarMensaje("¡Tesoro Encontrado!", pista.mensaje, pista.img);
-                    }
-                }, 300);
-
-                if (encontradas === zona1.pistas.length) {
-                    setTimeout(finalizarNivel, 2000);
-                }
-            };
-            capaIconos.appendChild(div);
-        });
+    function sumarPuntos(puntos) {
+        puntajeTotal += puntos;
+        const pVal = document.getElementById('puntos-val');
+        if (pVal) pVal.innerText = puntajeTotal;
     }
 
-    // --- MODALES Y DILEMAS ---
-    function lanzarDilema(pista, datosDilema) {
-        const modal = document.getElementById('modal-mensaje');
-        const mTitulo = document.getElementById('modal-titulo');
-        const mTexto = document.getElementById('modal-texto');
-        const btnCerrar = document.getElementById('btn-cerrar-modal');
-
-        mTitulo.innerHTML = `
-            <img src="${RUTA_IMGS}${pista.img}" id="modal-imagen">
-            <br>¡Momento de Decidir!
-        `;
+    function finalizarZona1() {
+        console.log("¡Zona 1 completada! Pasando a la Zona 3...");
         
-        mTexto.innerText = `${pista.mensaje}\n\n${datosDilema.pregunta}`;
-        btnCerrar.classList.add('hidden');
+        // Transición de pantallas
+        escenario1.classList.add('hidden');
+        escenario3.classList.remove('hidden');
+        
+        // Ajustar el marcador de puntos para que no estorbe en el runner
+        const marcadorPuntos = document.getElementById('marcador-puntos');
+        if (marcadorPuntos) marcadorPuntos.style.top = "90px"; 
 
-        let contenedorOpciones = document.getElementById('contenedor-opciones');
-        if (!contenedorOpciones) {
-            contenedorOpciones = document.createElement('div');
-            contenedorOpciones.id = 'contenedor-opciones';
-            mTexto.after(contenedorOpciones);
-        }
-        contenedorOpciones.innerHTML = "";
-
-        datosDilema.opciones.forEach(opcion => {
-            const btn = document.createElement('button');
-            btn.className = "btn-opcion";
-            btn.innerText = opcion.texto;
-            btn.onclick = () => {
-                puntajeTotal += opcion.puntos;
-                actualizarInterfazPuntos();
-                contenedorOpciones.innerHTML = `<p style="color:#0277bd; font-weight:bold;">¡Gracias por tu acción de amor!</p>`;
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    btnCerrar.classList.remove('hidden');
-                    contenedorOpciones.innerHTML = "";
-                }, 1500);
-            };
-            contenedorOpciones.appendChild(btn);
-        });
-        modal.classList.remove('hidden');
+        // Iniciar la lógica del Runner
+        iniciarZona3();
     }
 
-    function mostrarMensaje(titulo, texto, nombreImg) {
-        const mTitulo = document.getElementById('modal-titulo');
-        mTitulo.innerHTML = `
-            <img src="${RUTA_IMGS}${nombreImg}" id="modal-imagen">
-            <br>${titulo}
-        `;
-        
-        document.getElementById('modal-texto').innerText = texto;
-        const extra = document.getElementById('contenedor-opciones');
-        if (extra) extra.innerHTML = "";
-        
-        document.getElementById('btn-cerrar-modal').classList.remove('hidden');
-        document.getElementById('modal-mensaje').classList.remove('hidden');
-    }
-
-    // --- MARCADORES ---
     function crearMarcadorPuntos() {
         if (!document.getElementById('marcador-puntos')) {
             const marcador = document.createElement('div');
             marcador.id = 'marcador-puntos';
             marcador.innerHTML = `Puntos de Bondad: <span id="puntos-val">0</span>`;
-            document.getElementById('marcador').after(marcador);
+            
+            // Lo añadimos al body para que sea persistente entre niveles
+            document.body.appendChild(marcador);
         }
     }
 
-    function actualizarInterfazPuntos() {
-        const pVal = document.getElementById('puntos-val');
-        if (pVal) pVal.innerText = puntajeTotal;
+    function mostrarMensajeGlobal(titulo, texto) {
+        const modal = document.getElementById('modal-mensaje');
+        const mTitulo = document.getElementById('modal-titulo');
+        const mTexto = document.getElementById('modal-texto');
+        
+        if (mTitulo) mTitulo.innerText = titulo;
+        if (mTexto) mTexto.innerText = texto;
+        
+        modal.classList.remove('hidden');
     }
-
-    function finalizarNivel() {
-        mostrarMensaje(
-            "¡Nivel Completado!", 
-            `¡Felicidades! Has descubierto todos los tesoros de nuestra comunidad.\n\nPuntaje de Bondad: ${puntajeTotal}`, 
-            "iconos_L5_Jesus_resusitado.png"
-        );
-    }
-
-    document.getElementById('btn-cerrar-modal').onclick = () => {
-        document.getElementById('modal-mensaje').classList.add('hidden');
-    };
 });

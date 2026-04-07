@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>La Aventura de la Comunidad</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -22,19 +22,34 @@
     </main>
 
     <section id="escenario-juego" class="hidden">
-        <div id="marcador">Pistas encontradas: <span id="contador">0</span>/10</div>
-        
         <div id="contenedor-mision">
+            <div id="marcador">Pistas: <span id="contador">0</span>/10</div>
+            
             <img src="src/imgs/zona01/Juego_de_busqueda.jpg" id="fondo-busqueda" alt="Salón de clases">
             
             <div id="capa-iconos"></div>
+            </div>
+    </section>
+
+    <section id="escenario-zona3" class="hidden">
+        <div id="contenedor-runner">
+            <canvas id="canvasRunner"></canvas>
+            
+            <div id="marcador-corazones">
+                ❤️ Corazones: <span id="corazones-val">0</span>
+            </div>
+
+            <div id="instrucciones-runner">
+                Presiona ESPACIO o TOCA para SALTAR
+            </div>
         </div>
     </section>
 
     <div id="modal-mensaje" class="modal hidden">
         <div class="modal-contenido">
-            <h2 id="modal-titulo">¡Excelente!</h2>
+            <h2 id="modal-titulo"></h2>
             <p id="modal-texto"></p>
+            <div id="contenedor-opciones"></div> 
             <button id="btn-cerrar-modal">Continuar</button>
         </div>
     </div>

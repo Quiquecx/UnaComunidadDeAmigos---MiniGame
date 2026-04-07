@@ -71,13 +71,26 @@ export const DATOS_AVENTURA = {
         ]
     },
     zona2: {
-        // Aquí irán los dilemas de "Pistas para vivir en comunidad"
         titulo: "Pistas para vivir en comunidad",
         dilemas: [] 
     },
     zona3: {
-        // Aquí irán las reglas de "Corre por el Premio"
-        titulo: "Las reglas del juego",
-        retos: []
+        titulo: "Corre por el Premio hacia la Santidad",
+        fondo: "src/imgs/zona03/PISTA.JPG",
+        personaje: "nino_runner.png",
+        config: {
+            velocidadInicial: 5,
+            gravedad: 0.8,
+            fuerzaSalto: -15
+        },
+        objetos: {
+            premios: [
+                { id: "corazon", img: "corazon_santidad.png", puntos: 10 }
+            ],
+            obstaculos: [
+                { id: "egoísmo", img: "obstaculo_1.png" },
+                { id: "desobediencia", img: "obstaculo_2.png" }
+            ]
+        }
     }
 };
