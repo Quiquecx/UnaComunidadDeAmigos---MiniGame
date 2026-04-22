@@ -4,11 +4,14 @@ const zona1 = DATOS_AVENTURA.zona1;
 const RUTA_IMGS = "src/imgs/zona01/"; 
 let encontradas = 0;
 
+// --- PRECARGA DE SONIDOS ---
+const sndCorrecto = new Audio('src/sounds/correcto.mp3');
+const sndError = new Audio('src/sounds/error.mp3');
+
 export function iniciarZona1(onFinalizar, onMarcarPuntos) {
     const capaIconos = document.getElementById('capa-iconos');
     const contador = document.getElementById('contador');
     
-    // Limpiamos todo antes de empezar
     capaIconos.innerHTML = "";
     encontradas = 0;
     if (contador) contador.innerText = encontradas;
@@ -21,6 +24,14 @@ export function iniciarZona1(onFinalizar, onMarcarPuntos) {
         div.style.top = `${pista.top}px`;
         div.style.left = `${pista.left}px`;
         
+        // --- AJUSTE DE RANGO DE SELECCIÓN ---
+        // Si el objeto es 'mapa' o 'custodia', reducimos el área de clic
+        if (pista.id === 'mapa' || pista.id === 'custodia') {
+            div.style.width = '60px';  // Rango reducido a la mitad
+            div.style.height = '60px';
+            div.style.overflow = 'visible'; // La imagen puede sobresalir del área de clic
+        }
+        
         div.onclick = (e) => {
             e.stopPropagation();
             if (div.classList.contains('revelado')) return;
@@ -31,13 +42,14 @@ export function iniciarZona1(onFinalizar, onMarcarPuntos) {
             
             marcarChecklist(pista.id);
 
-            // Pequeña pausa para que se vea la animación de revelado antes del modal
             setTimeout(() => {
                 if (pista.dilema) {
                     lanzarDilema(pista, onMarcarPuntos, () => {
                         verificarVictoria(onFinalizar);
                     });
                 } else {
+                    sndCorrecto.currentTime = 0;
+                    sndCorrecto.play(); 
                     mostrarMensajeLocal("¡Tesoro Encontrado!", pista.mensaje, pista.img);
                     verificarVictoria(onFinalizar);
                 }
@@ -47,9 +59,10 @@ export function iniciarZona1(onFinalizar, onMarcarPuntos) {
     });
 }
 
+// ... (Resto de las funciones verificarVictoria, crearChecklist, marcarChecklist y mostrarMensajeLocal se mantienen igual)
+
 function verificarVictoria(onFinalizar) {
     if (encontradas === zona1.pistas.length) {
-        // Quitamos el checklist antes de irnos para que no estorbe en la Zona 2
         const checkCont = document.getElementById('checklist-tesoros');
         if (checkCont) checkCont.style.display = 'none';
 
@@ -66,7 +79,7 @@ function crearChecklist() {
         checkCont.id = 'checklist-tesoros';
         document.getElementById('escenario-juego').appendChild(checkCont);
     }
-    checkCont.style.display = 'block'; // Aseguramos que sea visible
+    checkCont.style.display = 'block'; 
     checkCont.innerHTML = `<h3>Lista de Tesoros</h3>` + 
         zona1.pistas.map(p => `<div id="check-${p.id}" class="item-check">⬜ ${p.id.toUpperCase()}</div>`).join('');
 }
@@ -108,13 +121,16 @@ function lanzarDilema(pista, onMarcarPuntos, callback) {
         btn.innerText = opcion.texto;
         
         btn.onclick = () => {
+            sndCorrecto.currentTime = 0;
+            sndCorrecto.play();
+
             onMarcarPuntos(opcion.puntos);
             contenedor.innerHTML = `<p class="mensaje-exito">¡Acción de amor registrada! +${opcion.puntos} puntos</p>`;
             
             setTimeout(() => {
                 modal.classList.add('hidden');
                 btnCerrar.classList.remove('hidden');
-                if (callback) callback(); // Revisa si ya ganamos
+                if (callback) callback(); 
             }, 1500);
         };
         contenedor.appendChild(btn);

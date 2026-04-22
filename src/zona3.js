@@ -3,7 +3,14 @@ import { DATOS_AVENTURA } from './preguntas.js';
 const datos = DATOS_AVENTURA.zona3;
 let juegoActivo = false;
 let ctx, canvas;
-let animationId; // Para poder detener el loop correctamente
+let animationId;
+
+// --- SONIDOS ---
+const sndCorazon = new Audio('src/sounds/correcto.mp3');
+const sndChoque = new Audio('src/sounds/error.mp3');
+const sndSalto = new Audio('src/sounds/correcto.mp3'); // Puedes usar el mismo o uno de salto si tienes
+sndCorazon.volume = 0.6;
+sndChoque.volume = 0.8;
 
 // --- IMÁGENES ---
 let fondoImg = new Image();
@@ -13,13 +20,11 @@ let imgIzq = new Image();
 imgDer.src = 'src/imgs/zona03/personaje_derecho.png';
 imgIzq.src = 'src/imgs/zona03/personaje_izquierdo.png';
 
-// Variables de Juego
 let fondoX = 0;
 let velocidad = 8; 
 let corazonesRecogidos = 0;
 let frameCount = 0;
 
-// Físicas del Personaje
 let personaje = {
     x: 100,
     y: 500, 
@@ -32,7 +37,6 @@ let personaje = {
     frameAnim: 0 
 };
 
-// Listas de objetos
 let obstaculos = [];
 let corazones = [];
 
@@ -45,7 +49,6 @@ export function iniciarZona3() {
 
     fondoImg.src = datos.fondo;
     
-    // Limpiamos eventos previos para evitar duplicados al reintentar
     window.removeEventListener('keydown', manejarEntrada);
     window.addEventListener('keydown', manejarEntrada);
     
@@ -56,14 +59,13 @@ export function iniciarZona3() {
     };
 
     fondoImg.onload = () => {
-        if (!juegoActivo) { // Evita múltiples loops si se llama varias veces
+        if (!juegoActivo) {
             juegoActivo = true;
             resetJuego();
             loopRunner();
         }
     };
     
-    // Si la imagen ya estaba cargada (reintento rápido)
     if (fondoImg.complete) {
         juegoActivo = true;
         resetJuego();
@@ -93,6 +95,10 @@ function resetJuego() {
 
 function saltar() {
     if (personaje.enSuelo) {
+        // --- SONIDO DE SALTO ---
+        sndSalto.currentTime = 0;
+        sndSalto.play().catch(() => {});
+
         personaje.dy = personaje.salto;
         personaje.enSuelo = false;
     }
@@ -101,12 +107,10 @@ function saltar() {
 function loopRunner() {
     if (!juegoActivo) return;
 
-    // 1. DIBUJAR FONDO INFINITO
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(fondoImg, fondoX, 0, canvas.width, canvas.height);
     ctx.drawImage(fondoImg, fondoX + canvas.width, 0, canvas.width, canvas.height);
 
-    // 2. LÓGICA DEL PERSONAJE
     personaje.dy += personaje.gravedad;
     personaje.y += personaje.dy;
 
@@ -117,7 +121,6 @@ function loopRunner() {
         personaje.enSuelo = true;
     }
 
-    // Animación de pies
     if (personaje.enSuelo) {
         if (frameCount % 10 === 0) {
             personaje.frameAnim = personaje.frameAnim === 0 ? 1 : 0;
@@ -129,7 +132,6 @@ function loopRunner() {
     let imagenActual = personaje.frameAnim === 0 ? imgDer : imgIzq;
     ctx.drawImage(imagenActual, personaje.x, personaje.y, personaje.w, personaje.h);
 
-    // 3. GENERAR Y DIBUJAR OBSTÁCULOS (Vallas)
     frameCount++;
     if (frameCount % 100 === 0) generarObstaculo();
     if (frameCount % 150 === 0) generarCorazon();
@@ -137,25 +139,25 @@ function loopRunner() {
     obstaculos.forEach((obs, index) => {
         obs.x -= velocidad;
         
-        // Dibujo de Valla
+        // Dibujo simplificado de Valla
         ctx.lineWidth = 6;
         ctx.strokeStyle = "#333";
         ctx.beginPath();
         ctx.moveTo(obs.x - 10, obs.y + obs.h);
         ctx.lineTo(obs.x + obs.w + 10, obs.y + obs.h);
         ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(obs.x + 5, obs.y); ctx.lineTo(obs.x + 5, obs.y + obs.h);
-        ctx.moveTo(obs.x + obs.w - 5, obs.y); ctx.lineTo(obs.x + obs.w - 5, obs.y + obs.h);
-        ctx.stroke();
         ctx.fillStyle = "#FFD600";
         ctx.fillRect(obs.x, obs.y, obs.w, 25);
 
-        if (rectIntersect(personaje, obs)) perder();
+        if (rectIntersect(personaje, obs)) {
+            // --- SONIDO DE CHOQUE ---
+            sndChoque.currentTime = 0;
+            sndChoque.play();
+            perder();
+        }
         if (obs.x < -100) obstaculos.splice(index, 1);
     });
 
-    // 4. DIBUJAR CORAZONES
     corazones.forEach((cor, index) => {
         cor.x -= velocidad;
         ctx.font = "50px serif"; 
@@ -163,18 +165,20 @@ function loopRunner() {
         ctx.fillText("❤️", cor.x, cor.y);
 
         if (rectIntersect(personaje, {x: cor.x - 25, y: cor.y - 25, w: 50, h: 50})) {
+            // --- SONIDO DE CORAZÓN ---
+            sndCorazon.currentTime = 0;
+            sndCorazon.play();
+
             corazonesRecogidos++;
             const marcador = document.getElementById('corazones-val');
             if(marcador) marcador.innerText = corazonesRecogidos;
             corazones.splice(index, 1);
             
-            // Opcional: Victoria al llegar a 20 corazones
             if (corazonesRecogidos >= 20) ganarJuego();
         }
         if (cor.x < -100) corazones.splice(index, 1);
     });
 
-    // Movimiento del fondo y aumento de dificultad
     fondoX -= velocidad;
     if (fondoX <= -canvas.width) fondoX = 0;
     velocidad += 0.001; 

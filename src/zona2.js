@@ -6,6 +6,10 @@ let pistasObjetos = [];
 let fondoImg = new Image();
 let callbackFinalizar;
 
+// --- PRECARGA DE SONIDOS ---
+const sndCorrecto = new Audio('src/sounds/correcto.mp3');
+const sndError = new Audio('src/sounds/error.mp3');
+
 // Coordenadas
 const posicionesPistas = [
     { x: 180, y: 150 }, { x: 450, y: 120 }, { x: 750, y: 200 },
@@ -30,14 +34,12 @@ export function iniciarZona2(onFinalizar) {
 }
 
 async function prepararRecursos() {
-    // 1. Crear Promesa para el fondo
     const cargarFondo = new Promise((resolve) => {
         fondoImg.src = 'src/imgs/zona02/fondo02.png';
         fondoImg.onload = resolve;
         fondoImg.onerror = () => console.error("No se pudo cargar el fondo de la Zona 2");
     });
 
-    // 2. Crear Promesas para cada pista
     const promesasPistas = datos.pistas.map((pista, index) => {
         return new Promise((resolve) => {
             let img = new Image();
@@ -56,26 +58,20 @@ async function prepararRecursos() {
             };
             img.onerror = () => {
                 console.error(`Error cargando: Pista 0${index + 1}.png`);
-                resolve(); // Resolvemos de todos modos para no bloquear el juego
+                resolve();
             };
         });
     });
 
-    // 3. Esperar a que TODO cargue
     await Promise.all([cargarFondo, ...promesasPistas]);
-    
-    // 4. Una vez todo listo, dibujamos
     dibujarEscena();
 }
 
 function dibujarEscena() {
     if (!ctx) return;
-    
-    // Fondo
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(fondoImg, 0, 0, canvas.width, canvas.height);
 
-    // Pistas
     pistasObjetos.forEach(pista => {
         if (pista && pista.img) {
             ctx.drawImage(pista.img, pista.x, pista.y, pista.w, pista.h);
@@ -131,6 +127,10 @@ function mostrarDilema(pista) {
         
         btn.onclick = () => {
             if (opcion.correcta) {
+                // --- SONIDO CORRECTO ---
+                sndCorrecto.currentTime = 0;
+                sndCorrecto.play();
+
                 pista.completada = true;
                 contenedorOpciones.innerHTML = `
                     <p class="mensaje-exito">¡Excelente decisión!</p>
@@ -144,6 +144,10 @@ function mostrarDilema(pista) {
                     verificarVictoria();
                 }, 3500);
             } else {
+                // --- SONIDO ERROR ---
+                sndError.currentTime = 0;
+                sndError.play();
+
                 btn.style.backgroundColor = "#ffcdd2";
                 btn.innerText = "❌ Inténtalo de nuevo";
                 setTimeout(() => {
