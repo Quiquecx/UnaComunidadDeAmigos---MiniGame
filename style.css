@@ -83,7 +83,7 @@ body, html {
 /* ==========================================================
    3. ESTRUCTURA DE ESCENARIOS (ADAPTABLES)
    ========================================================== */
-#escenario-juego, #escenario-zona3 {
+#escenario-juego, #escenario-zona2, #escenario-zona3 {
     width: 100vw;
     height: 100vh;
     display: flex;
@@ -94,36 +94,32 @@ body, html {
     left: 0;
 }
 
-/* Contenedor unificado para ambas zonas */
-#contenedor-mision, #contenedor-runner {
+/* Contenedor unificado para todas las zonas */
+#contenedor-mision, #contenedor-pistas, #contenedor-runner {
     position: relative; 
-    width: 1024px;   /* Tamaño base */
-    height: 768px;  /* Tamaño base */
+    width: 1024px;   
+    height: 768px;  
     background: white;
     border: 8px solid #ff9800;
     border-radius: 20px;
     box-shadow: 0 0 50px rgba(0,0,0,0.5);
     overflow: hidden;
     
-    /* Magia para la adaptabilidad */
     transform: scale(var(--escala-juego));
     transform-origin: center center;
     flex-shrink: 0;
 }
 
-#contenedor-runner {
-    border-color: #4caf50; /* Color verde para la zona 3 */
-}
+#contenedor-pistas { border-color: #2196f3; } /* Azul para zona 2 */
+#contenedor-runner { border-color: #4caf50; } /* Verde para zona 3 */
 
-#fondo-busqueda, #canvasRunner {
+#fondo-busqueda, #canvasPistas, #canvasRunner {
     width: 100%;
     height: 100%;
     display: block;
 }
 
-#fondo-busqueda {
-    object-fit: fill;
-}
+#fondo-busqueda { object-fit: fill; }
 
 /* ==========================================================
    4. INTERFAZ DE USUARIO (DENTRO DEL JUEGO)
@@ -164,9 +160,9 @@ body, html {
 
 #marcador { top: 25px; background: #ff9800; font-size: 1.3rem; }
 #marcador-puntos { top: 95px; background: #4caf50; font-size: 1.1rem; }
-#marcador-corazones { top: 25px; background: #ff4081; font-size: 1.3rem; border-color: white; }
+#marcador-corazones { top: 25px; background: #ff4081; font-size: 1.3rem; }
 
-#instrucciones-runner {
+#instrucciones-pistas, #instrucciones-runner {
     position: absolute;
     bottom: 20px;
     width: 100%;
@@ -174,6 +170,8 @@ body, html {
     color: #333;
     font-weight: bold;
     text-shadow: 1px 1px 2px white;
+    background: rgba(255,255,255,0.6);
+    padding: 5px 0;
 }
 
 /* ==========================================================
@@ -200,9 +198,18 @@ body, html {
     animation: popIn 0.4s ease-out;
 }
 
-#modal-imagen {
+.modal-img-pista, #modal-imagen {
     width: 150px;
+    height: auto;
     margin-bottom: 15px;
+    border-radius: 15px;
+}
+
+.mensaje-exito {
+    color: #2e7d32;
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin: 10px 0;
 }
 
 #contenedor-opciones {
@@ -227,6 +234,31 @@ body, html {
 .btn-opcion:hover {
     background-color: #0288d1;
     color: white;
+}
+
+#btn-cerrar-modal {
+    margin-top: 20px;
+    padding: 10px 30px;
+    background-color: #4fc3f7;
+    border: none;
+    border-radius: 25px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* Busca esta sección y asegúrate de que esté así */
+#contenedor-pistas { 
+    border-color: #2196f3; 
+    position: relative; /* Importante */
+    background-color: #f0f0f0; /* Color temporal para ver si carga el contenedor */
+}
+
+#canvasPistas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background-color: transparent;
 }
 
 /* ==========================================================

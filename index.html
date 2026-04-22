@@ -24,11 +24,18 @@
     <section id="escenario-juego" class="hidden">
         <div id="contenedor-mision">
             <div id="marcador">Pistas: <span id="contador">0</span>/10</div>
-            
             <img src="src/imgs/zona01/Juego_de_busqueda.jpg" id="fondo-busqueda" alt="Salón de clases">
-            
             <div id="capa-iconos"></div>
+        </div>
+    </section>
+
+    <section id="escenario-zona2" class="hidden">
+        <div id="contenedor-pistas">
+            <canvas id="canvasPistas"></canvas>
+            <div id="instrucciones-pistas">
+                Busca las 7 pistas en el mapa y resuelve los retos
             </div>
+        </div>
     </section>
 
     <section id="escenario-zona3" class="hidden">
@@ -48,8 +55,10 @@
     <div id="modal-mensaje" class="modal hidden">
         <div class="modal-contenido">
             <h2 id="modal-titulo"></h2>
-            <p id="modal-texto"></p>
-            <div id="contenedor-opciones"></div> 
+            <div id="modal-cuerpo">
+                <p id="modal-texto"></p>
+                <div id="contenedor-opciones"></div> 
+            </div>
             <button id="btn-cerrar-modal">Continuar</button>
         </div>
     </div>
