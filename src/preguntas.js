@@ -17,14 +17,14 @@ export const DATOS_AVENTURA = {
                 dilema: {
                     pregunta: "Tu hermana pequeña rompe sin querer tu juguete favorito. ¿Qué harías?",
                     opciones: [
-                        { texto: "Te enojas y le gritas.", puntos: 1 },
+                        { texto: "Te enojas y le gritas.", puntos: -1 },
                         { texto: "La perdonas y le explicas cómo cuidarlo.", puntos: 3 },
-                        { texto: "Lo escondes para que no lo vuelva a tocar.", puntos: 2 }
+                        { texto: "Lo escondes para que no lo vuelva a tocar.", puntos: 1 }
                     ]
                 }
             },
             { 
-                id: "iglesia", 
+                id: "Parroquia", 
                 img: "iconos_L5_Iglesia.png", 
                 mensaje: "Jesús nos reúne en comunidad.", 
                 top: 243, 
@@ -32,9 +32,9 @@ export const DATOS_AVENTURA = {
                 dilema: {
                     pregunta: "Un adulto mayor necesita ayuda para cargar sus bolsas. ¿Qué harías?",
                     opciones: [
-                        { texto: "Pasas rápido para no tardarte.", puntos: 1 },
+                        { texto: "Pasas rápido para no tardarte.", puntos: -1 },
                         { texto: "Le preguntas si necesita ayuda.", puntos: 3 },
-                        { texto: "La miras pero no haces nada.", puntos: 2 }
+                        { texto: "La miras pero no haces nada.", puntos: 1 }
                     ]
                 }
             },
@@ -48,7 +48,7 @@ export const DATOS_AVENTURA = {
                 dilema: {
                     pregunta: "Estás jugando y tu amigo quiere cambiar las reglas para ganar. ¿Qué harías?",
                     opciones: [
-                        { texto: "Te enojas y dejas de jugar.", puntos: 1 },
+                        { texto: "Te enojas y dejas de jugar.", puntos: -1 },
                         { texto: "Le explicas que deben jugar justo.", puntos: 3 },
                         { texto: "Aceptas aunque no te guste.", puntos: 2 }
                     ]
@@ -63,9 +63,9 @@ export const DATOS_AVENTURA = {
                 dilema: {
                     pregunta: "Un compañero nuevo no tiene amigos y se sienta solo en el recreo. ¿Qué harías?",
                     opciones: [
-                        { texto: "Lo ignoras y juegas con tus amigos.", puntos: 1 },
+                        { texto: "Lo ignoras y juegas con tus amigos.", puntos: -1 },
                         { texto: "Lo invitas a jugar contigo.", puntos: 3 },
-                        { texto: "Le sonríes pero no hablas con él.", puntos: 2 }
+                        { texto: "Le sonríes pero no hablas con él.", puntos: 1 }
                     ]
                 }
             },

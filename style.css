@@ -273,3 +273,18 @@ body, html {
     0% { transform: scale(0.6); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
 }
+.score-llamativo {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #FFD700; /* Dorado */
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.7), 2px 2px 5px rgba(0,0,0,0.5);
+    display: block;
+    margin: 15px 0;
+    animation: bounceScore 0.6s ease-out;
+}
+
+@keyframes bounceScore {
+    0% { transform: scale(0.5); opacity: 0; }
+    80% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+}

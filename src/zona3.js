@@ -21,7 +21,7 @@ imgDer.src = 'src/imgs/zona03/personaje_derecho.png';
 imgIzq.src = 'src/imgs/zona03/personaje_izquierdo.png';
 
 let fondoX = 0;
-let velocidad = 8; 
+let velocidad = 7; 
 let corazonesRecogidos = 0;
 let frameCount = 0;
 
@@ -86,7 +86,7 @@ function resetJuego() {
     
     obstaculos = [];
     corazones = [];
-    velocidad = 8; 
+    velocidad = 7; 
     personaje.y = 500;
     personaje.dy = 0;
     frameCount = 0;

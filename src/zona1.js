@@ -125,7 +125,7 @@ function lanzarDilema(pista, onMarcarPuntos, callback) {
             sndCorrecto.play();
 
             onMarcarPuntos(opcion.puntos);
-            contenedor.innerHTML = `<p class="mensaje-exito">¡Acción de amor registrada! +${opcion.puntos} puntos</p>`;
+            contenedor.innerHTML = `<p class="mensaje-exito">¡Acción registrada! +${opcion.puntos} puntos</p>`;
             
             setTimeout(() => {
                 modal.classList.add('hidden');

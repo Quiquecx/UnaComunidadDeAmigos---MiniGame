@@ -12,8 +12,13 @@ const sndError = new Audio('src/sounds/error.mp3');
 
 // Coordenadas
 const posicionesPistas = [
-    { x: 180, y: 150 }, { x: 450, y: 120 }, { x: 750, y: 200 },
-    { x: 800, y: 480 }, { x: 550, y: 620 }, { x: 250, y: 580 }, { x: 120, y: 380 }
+    { x: 58,  y: 290 }, // Pista 1 (Amarilla)
+    { x: 418, y: 288 }, // Pista 2 (Azul)
+    { x: 729, y: 188 }, // Pista 3 (Verde)
+    { x: 173, y: 546 }, // Pista 4 (Morada)
+    { x: 434, y: 470 }, // Pista 5 (Naranja)
+    { x: 729, y: 478 }, // Pista 6 (Roja)
+    { x: 933, y: 577 }  // Pista 7 (Cian/Azul claro)
 ];
 
 export function iniciarZona2(onFinalizar) {
@@ -50,8 +55,8 @@ async function prepararRecursos() {
                     img: img,
                     x: posicionesPistas[index].x,
                     y: posicionesPistas[index].y,
-                    w: 100,
-                    h: 100,
+                    w: 50,
+                    h: 50,
                     completada: false
                 };
                 resolve();
@@ -96,9 +101,13 @@ function manejarClick(e) {
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
     
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
+    const x = Math.round((e.clientX - rect.left) * scaleX);
+    const y = Math.round((e.clientY - rect.top) * scaleY);
 
+    // --- TRUCO DE COORDENADAS: Copia esto de la consola de tu navegador ---
+    console.log(`📍 Clic en: { x: ${x}, y: ${y} }`);
+
+    // El resto de tu lógica de detección de pistas se queda igual
     pistasObjetos.forEach((pista) => {
         if (x > pista.x && x < pista.x + pista.w && y > pista.y && y < pista.y + pista.h) {
             if (!pista.completada) {

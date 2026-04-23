@@ -7,7 +7,7 @@ let puntajeTotal = 0;
 // --- CONFIGURACIÓN DE AUDIO GLOBAL ---
 const musicaIntro = new Audio('src/sounds/intro.mp3');
 musicaIntro.loop = true;
-musicaIntro.volume = 0.1; // Ajustado al 40% para que no opaque los efectos
+musicaIntro.volume = 0.1; 
 
 document.addEventListener('DOMContentLoaded', () => {
     // --- REFERENCIAS ---
@@ -33,9 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- EVENTOS DE INICIO ---
     if (btnJugar) {
         btnJugar.onclick = () => {
-            // INICIAR MÚSICA (Esto cumple con la política de interacción del navegador)
-            musicaIntro.play().catch(error => console.log("Esperando interacción para audio:", error));
-            
+            musicaIntro.play().catch(error => console.log("Esperando interacción:", error));
             pantallaInicio.classList.add('hidden');
             crearMarcadorPuntos();
             iniciarFlujoZona1(); 
@@ -48,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Comportamiento base del botón cerrar
     btnCerrarModal.onclick = ocultarModal;
 
     function ocultarModal() {
@@ -69,7 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function finalizarZona1() {
-        mostrarMensajeGlobal("¡Nivel 1 Completado! ✅", "¡Excelente buscador! Ahora vamos al mapa de la comunidad.");
+        // ACTIVAMOS EL SCORE LLAMATIVO AQUÍ
+        mostrarMensajeGlobal("¡Nivel 1 Completado! ✅", "¡Excelente buscador! Ahora vamos al mapa de la comunidad.", true);
         
         btnCerrarModal.onclick = () => {
             ocultarModal();
@@ -83,13 +81,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FLUJO ZONA 2 ---
     function iniciarFlujoZona2() {
         escenario2.classList.remove('hidden');
-        
         setTimeout(() => {
-            mostrarMensajeGlobal(
-                "🗺️ Mapa de Comunidad", 
-                "Busca las 7 pistas de colores en el mapa y resuelve los dilemas para aprender a vivir unidos."
-            );
-
+            mostrarMensajeGlobal("🗺️ Mapa de Comunidad", "Busca las 7 pistas de colores y resuelve los dilemas.");
             btnCerrarModal.onclick = () => {
                 ocultarModal();
                 iniciarZona2(finalizarZona2);
@@ -99,7 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function finalizarZona2() {
-        mostrarMensajeGlobal("¡Nivel 2 Completado! ✅", "¡Qué buen corazón tienes! Es hora de correr hacia la meta.");
+        // ACTIVAMOS EL SCORE LLAMATIVO AQUÍ
+        mostrarMensajeGlobal("¡Nivel 2 Completado! ✅", "¡Qué buen corazón tienes! Es hora de correr hacia la meta.", true);
         
         btnCerrarModal.onclick = () => {
             ocultarModal();
@@ -113,16 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FLUJO ZONA 3 ---
     function iniciarFlujoZona3() {
         escenario3.classList.remove('hidden');
-
         setTimeout(() => {
             const marcadorPuntos = document.getElementById('marcador-puntos');
             if (marcadorPuntos) marcadorPuntos.style.top = "90px"; 
-
-            mostrarMensajeGlobal(
-                "🏃 Corre por la Santidad", 
-                "Recoge corazones y evita los obstáculos. ¡Usa Espacio o clic para saltar!"
-            );
-
+            mostrarMensajeGlobal("🏃 Corre por la Santidad", "Recoge corazones y evita los obstáculos.");
             btnCerrarModal.onclick = () => {
                 ocultarModal();
                 iniciarZona3();
@@ -147,10 +135,48 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function mostrarMensajeGlobal(titulo, texto) {
+    // FUNCIÓN ACTUALIZADA CON ANIMACIÓN
+    function mostrarMensajeGlobal(titulo, texto, mostrarScore = false) {
         const modal = document.getElementById('modal-mensaje');
-        document.getElementById('modal-titulo').innerText = titulo;
-        document.getElementById('modal-texto').innerText = texto;
+        const mTitulo = document.getElementById('modal-titulo');
+        const mTexto = document.getElementById('modal-texto');
+
+        mTitulo.innerText = titulo;
+
+        if (mostrarScore) {
+            mTexto.innerHTML = `
+                ${texto}<br><br>
+                <div style="text-align:center;">
+                    <small style="color:#aaa; text-transform:uppercase;">Puntaje Acumulado</small><br>
+                    <span id="score-animado" class="score-llamativo">0</span>
+                </div>
+            `;
+            // Pequeño delay para que la animación se vea tras abrir el modal
+            setTimeout(() => {
+                animarConteo(puntajeTotal, document.getElementById('score-animado'));
+            }, 100);
+        } else {
+            mTexto.innerText = texto;
+        }
+
         modal.classList.remove('hidden');
+    }
+
+    function animarConteo(objetivo, elemento) {
+        let inicio = 0;
+        const pasos = 30; 
+        const incremento = objetivo / pasos;
+        let iteracion = 0;
+
+        const timer = setInterval(() => {
+            inicio += incremento;
+            iteracion++;
+            if (iteracion >= pasos) {
+                elemento.innerText = Math.floor(objetivo);
+                clearInterval(timer);
+            } else {
+                elemento.innerText = Math.floor(inicio);
+            }
+        }, 30);
     }
 });
