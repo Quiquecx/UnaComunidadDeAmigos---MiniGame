@@ -4,11 +4,12 @@ const datos = DATOS_AVENTURA.zona3;
 let juegoActivo = false;
 let ctx, canvas;
 let animationId;
+let callbackSumarPuntos; // Callback para puntos globales
 
 // --- SONIDOS ---
 const sndCorazon = new Audio('src/sounds/correcto.mp3');
 const sndChoque = new Audio('src/sounds/error.mp3');
-const sndSalto = new Audio('src/sounds/correcto.mp3'); // Puedes usar el mismo o uno de salto si tienes
+const sndSalto = new Audio('src/sounds/correcto.mp3'); 
 sndCorazon.volume = 0.6;
 sndChoque.volume = 0.8;
 
@@ -40,7 +41,12 @@ let personaje = {
 let obstaculos = [];
 let corazones = [];
 
-export function iniciarZona3() {
+/**
+ * Inicializa la Zona 3
+ * @param {Function} onSumarPuntos - Callback pasado desde main.js para actualizar puntos globales
+ */
+export function iniciarZona3(onSumarPuntos) {
+    callbackSumarPuntos = onSumarPuntos; // Guardamos la referencia
     canvas = document.getElementById('canvasRunner');
     ctx = canvas.getContext('2d');
     
@@ -95,10 +101,8 @@ function resetJuego() {
 
 function saltar() {
     if (personaje.enSuelo) {
-        // --- SONIDO DE SALTO ---
         sndSalto.currentTime = 0;
         sndSalto.play().catch(() => {});
-
         personaje.dy = personaje.salto;
         personaje.enSuelo = false;
     }
@@ -136,10 +140,10 @@ function loopRunner() {
     if (frameCount % 100 === 0) generarObstaculo();
     if (frameCount % 150 === 0) generarCorazon();
 
+    // Lógica de Obstáculos
     obstaculos.forEach((obs, index) => {
         obs.x -= velocidad;
         
-        // Dibujo simplificado de Valla
         ctx.lineWidth = 6;
         ctx.strokeStyle = "#333";
         ctx.beginPath();
@@ -150,7 +154,6 @@ function loopRunner() {
         ctx.fillRect(obs.x, obs.y, obs.w, 25);
 
         if (rectIntersect(personaje, obs)) {
-            // --- SONIDO DE CHOQUE ---
             sndChoque.currentTime = 0;
             sndChoque.play();
             perder();
@@ -158,20 +161,27 @@ function loopRunner() {
         if (obs.x < -100) obstaculos.splice(index, 1);
     });
 
+    // Lógica de Corazones
     corazones.forEach((cor, index) => {
         cor.x -= velocidad;
         ctx.font = "50px serif"; 
         ctx.textAlign = "center";
         ctx.fillText("❤️", cor.x, cor.y);
 
+        // Colisión con corazón
         if (rectIntersect(personaje, {x: cor.x - 25, y: cor.y - 25, w: 50, h: 50})) {
-            // --- SONIDO DE CORAZÓN ---
             sndCorazon.currentTime = 0;
             sndCorazon.play();
 
             corazonesRecogidos++;
+            
+            // 1. Sumamos al marcador del nivel (visual)
             const marcador = document.getElementById('corazones-val');
             if(marcador) marcador.innerText = corazonesRecogidos;
+            
+            // 2. Sumamos al sistema de puntos globales (+5 por corazón)
+            if (callbackSumarPuntos) callbackSumarPuntos(1);
+
             corazones.splice(index, 1);
             
             if (corazonesRecogidos >= 20) ganarJuego();
@@ -228,7 +238,7 @@ function mostrarModalFinal(titulo, texto, reintentar) {
     btnPrincipal.innerText = reintentar ? "Reintentar Nivel 3" : "Jugar de nuevo";
     btnPrincipal.onclick = () => {
         modal.classList.add('hidden');
-        iniciarZona3();
+        iniciarZona3(callbackSumarPuntos);
     };
 
     const btnMenu = document.createElement('button');

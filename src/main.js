@@ -42,7 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (btnInstrucciones) {
         btnInstrucciones.onclick = () => {
-            mostrarMensajeGlobal("¿Cómo Jugar?", "Nivel 1: Encuentra objetos.\nNivel 2: Resuelve dilemas en el mapa.\nNivel 3: ¡Corre y recoge corazones!");
+            mostrarMensajeGlobal(
+                "¿Cómo Jugar?", 
+                "<p>• <b>Nivel 1</b>: Encuentra objetos escondidos.<br>• <b>Nivel 2</b>: Resuelve dilemas en la comunidad.<br>• <b>Nivel 3</b>: ¡Corre y recoge corazones!</p>"
+            );
         };
     }
 
@@ -56,8 +59,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FLUJO ZONA 1 ---
     function iniciarFlujoZona1() {
         escenario1.classList.remove('hidden');
-        mostrarMensajeGlobal("🔍 Misión: El Tesoro", "Jesús ha dejado tesoros en el salón. Encuentra los 10 objetos para descubrir sus mensajes.");
+        mostrarMensajeGlobal(
+            "✨ NIVEL 1 ✨", 
+            "<div class='badge-mision'>Misión: El Tesoro</div><p>Jesús ha dejado tesoros en el salón. Encuentra los <b>10 objetos</b> para descubrir sus mensajes.</p>", 
+            "src/imgs/zona01/cofre.png"
+        );
         
+        btnCerrarModal.innerHTML = "¡EMPEZAR!";
         btnCerrarModal.onclick = () => {
             ocultarModal();
             iniciarZona1(finalizarZona1, sumarPuntos);
@@ -66,15 +74,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function finalizarZona1() {
-        // ACTIVAMOS EL SCORE LLAMATIVO AQUÍ
         mostrarMensajeGlobal("¡Nivel 1 Completado! ✅", "¡Excelente buscador! Ahora vamos al mapa de la comunidad.", true);
         
+        btnCerrarModal.innerHTML = "IR AL MAPA";
         btnCerrarModal.onclick = () => {
             ocultarModal();
             escenario1.classList.add('hidden');
             escenario2.classList.remove('hidden');
             iniciarFlujoZona2();
-            btnCerrarModal.onclick = ocultarModal;
         };
     }
 
@@ -82,25 +89,28 @@ document.addEventListener('DOMContentLoaded', () => {
     function iniciarFlujoZona2() {
         escenario2.classList.remove('hidden');
         setTimeout(() => {
-            mostrarMensajeGlobal("🗺️ Mapa de Comunidad", "Busca las 7 pistas de colores y resuelve los dilemas.");
+            mostrarMensajeGlobal(
+                "🌈 NIVEL 2 🌈", 
+                "<div class='badge-mision'>Mapa de Comunidad</div><p>Busca las <b>7 pistas</b> de colores y ayuda a tus amigos resolviendo los dilemas.</p>",
+                "src/imgs/zona02/comunidad.png"
+            );
+            btnCerrarModal.innerHTML = "EXPLORAR";
             btnCerrarModal.onclick = () => {
                 ocultarModal();
-                iniciarZona2(finalizarZona2);
-                btnCerrarModal.onclick = ocultarModal;
+                iniciarZona2(finalizarZona2, sumarPuntos);
             };
         }, 50); 
     }
 
     function finalizarZona2() {
-        // ACTIVAMOS EL SCORE LLAMATIVO AQUÍ
         mostrarMensajeGlobal("¡Nivel 2 Completado! ✅", "¡Qué buen corazón tienes! Es hora de correr hacia la meta.", true);
         
+        btnCerrarModal.innerHTML = "A LA META";
         btnCerrarModal.onclick = () => {
             ocultarModal();
             escenario2.classList.add('hidden');
             escenario3.classList.remove('hidden');
             iniciarFlujoZona3();
-            btnCerrarModal.onclick = ocultarModal;
         };
     }
 
@@ -110,11 +120,15 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             const marcadorPuntos = document.getElementById('marcador-puntos');
             if (marcadorPuntos) marcadorPuntos.style.top = "90px"; 
-            mostrarMensajeGlobal("🏃 Corre por la Santidad", "Recoge corazones y evita los obstáculos.");
+            mostrarMensajeGlobal(
+                "⚡ NIVEL 3 ⚡", 
+                "<div class='badge-mision'>Corre por la Santidad</div><p>¡Rápido! Recoge corazones y evita los obstáculos para llegar al cielo.</p>",
+                "src/imgs/zona03/santidad.png"
+            );
+            btnCerrarModal.innerHTML = "¡CORRER!";
             btnCerrarModal.onclick = () => {
                 ocultarModal();
-                iniciarZona3();
-                btnCerrarModal.onclick = ocultarModal;
+                iniciarZona3(sumarPuntos);
             };
         }, 60); 
     }
@@ -135,34 +149,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // FUNCIÓN ACTUALIZADA CON ANIMACIÓN
-    function mostrarMensajeGlobal(titulo, texto, mostrarScore = false) {
+    function mostrarMensajeGlobal(titulo, texto, extra = null) {
         const modal = document.getElementById('modal-mensaje');
         const mTitulo = document.getElementById('modal-titulo');
         const mTexto = document.getElementById('modal-texto');
+        const contenedorOpciones = document.getElementById('contenedor-opciones');
 
         mTitulo.innerText = titulo;
+        contenedorOpciones.innerHTML = ""; 
 
-        if (mostrarScore) {
-            mTexto.innerHTML = `
-                ${texto}<br><br>
+        let contenidoHTML = "";
+
+        if (typeof extra === 'string') {
+            contenidoHTML += `<img src="${extra}" class="modal-img-nivel">`;
+        }
+
+        contenidoHTML += texto;
+
+        if (extra === true) {
+            contenidoHTML += `
+                <br><br>
                 <div style="text-align:center;">
-                    <small style="color:#aaa; text-transform:uppercase;">Puntaje Acumulado</small><br>
-                    <span id="score-animado" class="score-llamativo">0</span>
+                    <small style="color:#888; text-transform:uppercase; font-weight:bold;">Puntaje Acumulado</small><br>
+                    <span id="score-animado" class="score-llamativo" style="font-size:3rem; color:#4caf50; font-weight:bold;">0</span>
                 </div>
             `;
-            // Pequeño delay para que la animación se vea tras abrir el modal
+            mTexto.innerHTML = contenidoHTML;
             setTimeout(() => {
                 animarConteo(puntajeTotal, document.getElementById('score-animado'));
             }, 100);
         } else {
-            mTexto.innerText = texto;
+            mTexto.innerHTML = contenidoHTML;
         }
 
         modal.classList.remove('hidden');
     }
 
     function animarConteo(objetivo, elemento) {
+        if (!elemento) return;
         let inicio = 0;
         const pasos = 30; 
         const incremento = objetivo / pasos;
